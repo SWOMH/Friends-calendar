@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import Boolean, BooleanClauseList, ForeignKey, String, Integer, BigInteger, Index
+from sqlalchemy import Boolean, BooleanClauseList, ForeignKey, String, Integer, BigInteger, Index, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.base import Base
 from database.types import intpk
@@ -16,11 +16,15 @@ class Users(Base):
     account_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    tokens = relationship("Token", back_populates="user")
-    friends = relationship("Friends", back_populates="user")
+    tokens = relationship("Token", back_populates="user")    
     celendar = relationship("CelendarEvent", back_populates="user")
     comment = relationship("Comments", back_populates="user")
     confirmend = relationship("EventConfirmends", back_populates="user")
+    friends = relationship(
+        "Friends",
+        foreign_keys="[Friends.user_id_main]",
+        back_populates="user"
+    )
 
     __table_args__ = (
         Index("ix_users_account_name", "name"),
@@ -43,9 +47,24 @@ class Token(Base):
 
 class Friends(Base):
     __tablename__ = "friends"
-    user_id_main: Mapped[int] = mapped_column(Integer, ForeignKey("public.users.id"), nullable=False, comment="Сам пользователь")
-    user_id_friend: Mapped[int] = mapped_column(Integer, ForeignKey("public.users.id"), nullable=False, comment="Друг/заявка в друзья/удаленный друг")
-    is_friend: Mapped[bool] = mapped_column(Boolean, default=False)
-    is_request: Mapped[bool] = mapped_column(Boolean, default=True, comment="Запрос в друзья")
-    
-    user = relationship("Users", back_populates="friends")
+    id: Mapped[intpk]
+    user_id_main: Mapped[int] = mapped_column(
+        ForeignKey("public.users.id", ondelete="CASCADE"),
+        nullable=False)
+    user_id_friend: Mapped[int] = mapped_column(
+        ForeignKey("public.users.id", ondelete="CASCADE"),
+        nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default="pending", comment="pending | accepted | blocked | deleted")
+    user = relationship(
+        "Users",
+        foreign_keys=[user_id_main],
+        back_populates="friends")
+
+    __table_args__ = (
+        UniqueConstraint(
+            'user_id_main',
+            'user_id_friend',
+            name='uq_friend_pair'
+        ),
+        {'schema': 'public'}
+    )

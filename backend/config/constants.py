@@ -6,7 +6,7 @@ class Constants(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
-    AUTH_DB_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
 
     @property

@@ -1,2 +1,5 @@
 .venv
 .env.prod
+__pycache__
+__init__.*
+base.*

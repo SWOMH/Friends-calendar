@@ -1,11 +1,9 @@
 from typing import Optional
 from pydantic import BaseModel, field_validator, EmailStr
 
-class RegistrationRequest(BaseModel):
+class UserLoginData(BaseModel):
     mail: EmailStr
     password: str
-    name: str
-    nickname: str
 
     @field_validator("password")
     @classmethod
@@ -15,6 +13,10 @@ class RegistrationRequest(BaseModel):
         return v
 
 
+class RegistrationRequest(UserLoginData):
+    name: str
+    nickname: str
+    
 
 class UserResponse(BaseModel):
     id: int

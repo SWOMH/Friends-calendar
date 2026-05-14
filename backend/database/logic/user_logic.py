@@ -9,20 +9,21 @@ from exceptions.user_exceptions import UserAlreadyExistsException, UserBannedExc
     UserInvalidEmailOrPasswordException, UserTokenNotFoundException
 from utils.hashed import get_password_hash, verify_password
 import random
+import string
 
 class UserLogic:
 
-    def _get_user_code(name: str):
+    def _get_user_code(self, length: int = 5):
         """
-        Хз какой код генерить. Из имени словно говно. Мб прост набор всего
-        по типу #D3IOP2
-        или хз
+        Похрен, буду рандом генерить
         """
-        ...
+        characters = string.ascii_uppercase + string.digits        
+        code = f"#{''.join(random.choices(characters, k=length))}"
+        return code
 
 
     @connection()
-    async def registeration_user(user: RegistrationRequest, session: AsyncSession):
+    async def registeration_user(self, user: RegistrationRequest, session: AsyncSession):
         stmt = select(Users).where(Users.mail == user.mail)
         result = await session.execute(stmt)
         exist_user = result.scalar_one_or_none()
@@ -32,7 +33,7 @@ class UserLogic:
             raise UserNotConfirmed
 
         hashed = get_password_hash(user.password)
-        code = get_user_code()
+        code = self._get_user_code()
         new_user = Users(
             name=user.name,
             mail=user.mail,
@@ -45,8 +46,8 @@ class UserLogic:
         session.add(new_user)
         await session.commit()
 
-    @connection
-    async def confirm_account(user_id: int, session: AsyncSession) -> bool:
+    @connection()
+    async def confirm_account(self, user_id: int, session: AsyncSession) -> bool:
         stmt = select(Users).where(Users.id == user_id)
         result = await session.execute(stmt)
         user = result.scalar_one_or_none()

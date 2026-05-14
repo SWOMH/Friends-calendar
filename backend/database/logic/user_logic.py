@@ -1,6 +1,6 @@
 from os import name
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.database.models.user_models import Token, Users
+from database.models.user_models import Token, Users
 from schemas.user_schema import RegistrationRequest, TokenResponse, UserLoginData
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select

@@ -16,7 +16,7 @@ class UserLoginData(BaseModel):
 class RegistrationRequest(UserLoginData):
     name: str
     nickname: str
-    
+
 
 class UserResponse(BaseModel):
     id: int
@@ -26,8 +26,7 @@ class UserResponse(BaseModel):
     is_banned: bool
     account_confirmed: bool
 
-class TokenResponse(BaseModel):
-    id: int
+class TokenResponse(BaseModel):    
     token: str
     refresh_token: str
     
@@ -35,3 +34,6 @@ class TokenResponse(BaseModel):
 class TokenData(BaseModel):
     user_id: Optional[int] = None
     email: Optional[str] = None
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

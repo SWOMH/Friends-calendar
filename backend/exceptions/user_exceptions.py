@@ -24,3 +24,9 @@ class UserInvalidEmailOrPasswordException(Exception):
 
 class UserTokenNotFoundException(Exception):
     details = "Token not found in the system"
+
+class UserNotPermissionException(Exception):
+    """
+    Прав как бы и нет, но чтоб в залупу прям не лезли, такое надо
+    """
+    details = "User no permissions"
